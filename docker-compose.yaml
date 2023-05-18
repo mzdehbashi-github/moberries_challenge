@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: backend
+  redis:
+    image: 'redis:7'
+    ports:
+      - '6379:6379'
+  backendserver:
+    build:
+      context: .
+    depends_on:
+      - database
+      - redis
+    ports:
+      - '8000:8000'
+    environment:
+      DJANGO_DATABASE_HOST: database
+      DJANGO_DATABASE_NAME: backend
+      DJANGO_DATABASE_USER: postgres
+      DJANGO_REDIS_HOST: redis
+      DJANGO_DATABASE_PASSWORD: postgres
+      DJANGO_SUPERUSER_PASSWORD: '123qwe!@#QWE'
+      DJANGO_DEBUG: 0
+    command:
+      - rungunicorn
